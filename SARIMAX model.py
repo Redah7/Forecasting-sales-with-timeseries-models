@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pandas_profiling import ProfileReport
 
-
-os.chdir('C:\\Users\\mrmalick\\OneDrive - Shoprite Checkers (Pty) Limited\\Desktop\\Learning\\Forecasting Models and Time Series for Business in Python\\5. Sarimax')
+#Set your working dir here
+os.chdir('C:\\Sarimax')
 cwd = os.getcwd()
 
 
@@ -37,7 +37,6 @@ It will determine during which period there are large changes to determine the n
 ###########################################################################################################
 '''
 
-
 #get the data
 data = pd.read_csv("Daily Bike Sharing.csv", 
                    index_col = "dteday", 
@@ -56,13 +55,12 @@ dataset.head(1)
 dataset = dataset.rename(columns = {'cnt' : 'y'})
 dataset.head(1)
 
-#index
+#index set freq to daily
 dataset = dataset.asfreq("D")
 dataset.index
 
-#viz
+#Create plot of the training data
 dataset["y"].plot(figsize = (10, 7), legend = True)
-
 
 
 """
@@ -70,7 +68,6 @@ dataset["y"].plot(figsize = (10, 7), legend = True)
 ####Stationarity: 4 types of ways a trend can change over time.
 We need to do a Dickey Fuller test to see if the data is stationary. 
 If it is stationary it means it has a clear well defined pattern, makes forecasting easy
-
 We will use DIFFERENCING to make the data stationary
 """
 
@@ -143,10 +140,8 @@ model = auto_arima(y = training_set['y'],
 model.summary()
 """
 The best model parameters for p,q,d is 0,1,3
-
 Look at the Covariance type section, this will tell you what is affecting it
 hum and windspeed is negative, it decreases the sales when its more cold or windy
-
 """
 
 """
@@ -165,12 +160,10 @@ test_set['y'].plot(legend = True)
 predictions_sarimax.plot(legend = True)
 
 
-
 #MAE and RMSE
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 print(round(mean_absolute_error(test_set['y'], predictions_sarimax),0))
 print(round(np.sqrt(mean_squared_error(test_set['y'], predictions_sarimax)), 0))
-
 
 #MAPE function
 def MAPE(y_true, y_pred):
@@ -179,21 +172,17 @@ def MAPE(y_true, y_pred):
 MAPE(test_set['y'], predictions_sarimax)
 
 
-
-
 """
 If you look at the model resukts, it looks like it performed well druing the 1st half of dec but the 2nd half of dec it didnt do so well
 ###########################################################################################################
-
-
 PROS
 Easy to understand, easy implement, automated opti
-
 CONS
 Not much variables to changes, low flexibility
-
 """
 
+#Export model for enseble
+predictions_tbats.to_csv('predictions_sarimax.csv', index = True)
 
 
 
